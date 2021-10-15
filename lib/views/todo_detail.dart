@@ -17,7 +17,7 @@ class TodoDetailView extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           children: [
             Text(
-              "todo date",
+              todo.date,
               style: Theme.of(context)
                   .textTheme
                   .bodyText1!
@@ -28,7 +28,7 @@ class TodoDetailView extends StatelessWidget {
               style: Theme.of(context).textTheme.headline5,
             ),
             SizedBox(height: 15),
-            Text("todo description")
+            Text(todo.description)
           ],
         ),
       ),
