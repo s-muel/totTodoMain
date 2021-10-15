@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:todo_app/controllers/todo_controller.dart';
 import 'package:todo_app/ultilities/ultils.dart';
 
 class CreateTodoView extends StatefulWidget {
@@ -19,6 +20,10 @@ class _CreateTodoViewState extends State<CreateTodoView> {
   final TextEditingController _timeController = TextEditingController();
 
   final GlobalKey<FormState> _formKey = GlobalKey();
+
+  final TodoController _todoController = TodoController();
+
+  final isLoading = true;
 
   @override
   Widget build(BuildContext context) {
@@ -135,13 +140,48 @@ class _CreateTodoViewState extends State<CreateTodoView> {
               style: TextButton.styleFrom(
                   backgroundColor: customBlue,
                   padding: const EdgeInsets.all(15)),
-              onPressed: () {
+              onPressed: () async {
                 if (_formKey.currentState!.validate()) {
                   print(_titleController.text);
                   print(_descController.text);
                   print(_dateController.text);
                   print(_timeController.text);
+
+                  String dateTime =
+                      _dateController.text + " " + _timeController.text;
+                  // bool isSuccess =await _todoController.createTodo(title: title, description: description, dateTime: dateTime, status: status)
+                  bool isSuccessful = await _todoController.createTodo(
+                    title: _titleController.text,
+                    description: _descController.text,
+                    dateTime: dateTime,
+                    //status: true
+                  );
+                  if (isSuccessful) {
+                    // do success
+                    final SnackBar snackBar = const SnackBar(
+                      content: Text(
+                        "To do created successfully",
+                        style: TextStyle(color: Colors.green),
+                      ),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  } else {
+                    SnackBar snackBar = const SnackBar(
+                      content: Text(
+                        "To do created not successfully",
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  }
                 } else {
+                  SnackBar snackBar = const SnackBar(
+                    content: Text(
+                      "all fields are required",
+                      style: TextStyle(color: Colors.blue),
+                    ),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   print("please enter data");
                 }
               },

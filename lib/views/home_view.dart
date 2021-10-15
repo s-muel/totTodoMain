@@ -45,10 +45,15 @@ class HomeView extends StatelessWidget {
             return ListView.separated(
                 padding: const EdgeInsets.all(16),
                 itemBuilder: (context, index) {
-                  return TodoTileWidget(
-                    todo: snapshot.data!.data[index],
-                    status: false,
-                  );
+                  if (snapshot.connectionState == ConnectionState.done &&
+                      snapshot.data!.data[index].status) {
+                    // print("working");
+                    return TodoTileWidget(
+                      todo: snapshot.data!.data[index],
+                    );
+                  } else {
+                    return SizedBox.shrink();
+                  }
                 },
                 separatorBuilder: (context, index) {
                   return const SizedBox(
@@ -126,27 +131,44 @@ class HomeView extends StatelessWidget {
 //,,,,,,,,,,,,,, then it returned List view separator  from todoTile widget
 //,,,,,,,,,,,,,, in model todo_tile_widget
 class CompletedTodoList extends StatelessWidget {
-  const CompletedTodoList({
+  CompletedTodoList({
     Key? key,
   }) : super(key: key);
+  final TodoController _todoController = TodoController();
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-        padding: EdgeInsets.all(16),
-        itemBuilder: (context, index) {
-          return TodoTileWidget(
-            status: false, todo: null,
-
-            // status: false,
-          );
-        },
-        separatorBuilder: (context, index) {
-          return SizedBox(
-            height: 10,
-          );
-        },
-        itemCount: 10);
+    return FutureBuilder<Todo?>(
+        future: _todoController.getAllTodo(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting &&
+              snapshot.data == null) {
+            return CircularProgressIndicator.adaptive();
+          }
+          if (snapshot.connectionState == ConnectionState.done &&
+              snapshot.data == null) {
+            return Text('Something went wrong');
+          }
+          return ListView.separated(
+              shrinkWrap: true,
+              padding: const EdgeInsets.all(16),
+              itemBuilder: (context, index) {
+                if (snapshot.connectionState == ConnectionState.done &&
+                    snapshot.data!.data[index].status) {
+                  return TodoTileWidget(
+                    todo: snapshot.data!.data[index],
+                  );
+                } else {
+                  return SizedBox.shrink();
+                }
+              },
+              separatorBuilder: (context, index) {
+                return const SizedBox(
+                  height: 10,
+                );
+              },
+              itemCount: snapshot.data!.data.length);
+        });
   }
 }
 
