@@ -29,24 +29,25 @@ class Todo {
 }
 
 class Datum {
-  Datum({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.date,
-  });
+  Datum(
+      {required this.id,
+      required this.title,
+      required this.description,
+      required this.date,
+      required this.status});
 
   String id;
   String title;
   String description;
   String date;
+  bool status;
 
   factory Datum.fromMap(Map<String, dynamic> json) => Datum(
-        id: json["_id"],
-        title: json["title"],
-        description: json["description"],
-        date: json["date_time"],
-      );
+      id: json["_id"],
+      title: json["title"],
+      description: json["description"],
+      date: json["date_time"],
+      status: json["status"]);
 
   Map<String, dynamic> toMap() => {
         "_id": id,
